@@ -1,0 +1,29 @@
+{
+    "name": "piotrku/seo-fields",
+    "description": "A Laravel Nova field.",
+    "keywords": [
+        "laravel",
+        "nova"
+    ],
+    "version": "0.1.0",
+    "license": "MIT",
+    "require": {
+        "php": "^8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Piotrku\\SeoFields\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Piotrku\\SeoFields\\FieldServiceProvider"
+            ]
+        }
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "prefer-stable": true
+}
