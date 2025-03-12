@@ -33,8 +33,10 @@ trait SeoableTrait
 
     public function getSeoableAttribute(): ?array
     {
-        return empty($this->content_seo)
+        $seoable = empty($this->content_seo)
             ? null
             : (is_array($this->content_seo) ? current($this->content_seo) : null);
+
+        return $seoable;
     }
 }

@@ -12,17 +12,103 @@ npm run prod
 ## edit cms/config/app.php
 
 ### add seo provider
-
+```
 'providers' => ServiceProvider::defaultProviders()->merge([
     Piotrku\SeoFields\FieldServiceProvider::class,
 ])->toArray(),
-
+```
 
 ### add seo alias
-
+```
 'aliases' => Facade::defaultAliases()->merge([
     'Seo' => Piotrku\SeoFields\Facades\Seo::class,
 ])->toArray(),
+```
+
+### add field set to your nova ressource
+```
+use Piotrku\SeoFields\SeoFields;
+
+public function fields(NovaRequest $request)
+    {
+        return [
+            SeoFields::make('Seo fields', 'content_seo', [
+                    Text::make('Title')
+                        ->rules('max:70')
+                        ->help('Recommended length 50-60 characters.')
+                        ->translatable(),
+                    Textarea::make('Description')
+                        ->rules('max:180')
+                        ->help('Recommended length 150-160 characters.')
+                        ->translatable(),
+                    Select::make('Robots')->options([
+                            'index, follow' => 'Index and follow',
+                            'noindex, follow' => 'No index and follow',
+                            'index, nofollow' => 'Index and no follow',
+                            'noindex, nofollow' => 'No index and no follow',
+                        ])
+                        ->resolveUsing(function ($value) {
+                            return $value ?: 'index, follow';
+                        }),
+                    Boolean::make('Hide in sitemap', 'is_sitemap_hidden')
+                        ->resolveUsing(fn ($value) => $value ?? false),
+                    Heading::make(' '),
+            ]),
+        ];
+    }
+```
+
+### run migration
+
+### add type casting to your model
+```
+'content_seo' => 'array',
+```
+
+
+### add seo header generation to your header blade
+```
+{!! Seo::generateHead() !!}
+```
+
+
+
+### add seo traits to your models
+```
+use Piotrku\SeoFields\Traits\SeoSitemapTrait;
+use Piotrku\SeoFields\Traits\SeoableTrait;
+
+class Page extends Model
+{
+    use SeoSitemapTrait, SeoableTrait;
+
+```
+
+### implement trait enforced methods (for sitemap generation)
+```
+    /**
+     * Get the Page url by item
+     *
+     * @return string
+     */
+    public function getSitemapItemUrl(): string
+    {
+        return route('news', ['slug' => $this->slug]);
+    }
+
+    /**
+     * Query all the Page items which should be
+     * part of the sitemap (crawlable for google).
+     *
+     * @return Builder
+     */
+    public static function getSitemapItems()
+    {
+        return static::all();
+    }
+```
+
+### update config/seo.php accordingly
 
 
 ### sitemap

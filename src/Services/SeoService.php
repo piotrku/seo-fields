@@ -53,8 +53,8 @@ class SeoService
             return $this->pageSeoData;
         }
 
-        $this->pageSeoData = is_array($this->currentPage->content_seo)
-          ? current($this->currentPage->content_seo)
+        $this->pageSeoData = is_array($this->currentPage->seoable)
+          ? $this->currentPage->seoable
           : $this->getGuessedPageSeoData();
 
         return $this->pageSeoData;
@@ -87,17 +87,17 @@ class SeoService
 
     public function getSeoTitle(): ?string
     {
-        return $this->escAttr(empty($this->pageSeoData['title'][$this->lang])
+        return empty($this->pageSeoData['title'][$this->lang])
           ? config('seo.defaults.title')
-          : $this->pageSeoData['title'][$this->lang]);
+          : $this->escAttr($this->pageSeoData['title'][$this->lang]);
     }
 
 
     public function getSeoDescription(): ?string
     {
-        return $this->escAttr(empty($this->pageSeoData['description'][$this->lang])
+        return empty($this->pageSeoData['description'][$this->lang])
           ? config('seo.defaults.description')
-          : $this->pageSeoData['description'][$this->lang]);
+          : $this->escAttr($this->pageSeoData['description'][$this->lang]);
     }
 
 
@@ -137,7 +137,7 @@ class SeoService
         return $locale;
     }
 
-    public function escAttr(string $string): string
+    public function escAttr(?string $string): string
     {
         return htmlspecialchars($string, ENT_QUOTES, 'UTF-8');
     }
